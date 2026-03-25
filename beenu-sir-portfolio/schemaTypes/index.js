@@ -6,5 +6,4 @@ import experienceMilestone from './experienceMilestone'
 import initiative from './initiative'
 import siteSettings from './siteSettings'
 import expertisePage from './expertisePage'
-
 export const schemaTypes = [engagement, galleryImage, featuredArticle, aboutPage, experienceMilestone, initiative, siteSettings, expertisePage]

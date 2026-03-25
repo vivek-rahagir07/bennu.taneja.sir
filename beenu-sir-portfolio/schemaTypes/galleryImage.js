@@ -18,7 +18,7 @@ export default {
       title: 'Image',
       type: 'image',
       options: {
-        hotspot: true, // Enables cropping
+        hotspot: true,
       },
     },
     {

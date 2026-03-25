@@ -2,9 +2,7 @@ import { getCliClient } from 'sanity/cli'
 import { createReadStream } from 'fs'
 import { join } from 'path'
 import process from 'process'
-
 const client = getCliClient({apiVersion: '2024-01-01'})
-
 const settingsData = {
     _id: 'siteSettings',
     _type: 'siteSettings',
@@ -22,7 +20,6 @@ const settingsData = {
     ctaHeading: 'Ready to elevate your journey?',
     ctaSubtext: "Let's collaborate to create lasting impact through leadership and excellence."
 };
-
 const expertiseData = {
     _id: 'expertisePage',
     _type: 'expertisePage',
@@ -57,7 +54,6 @@ const expertiseData = {
     placementDesc: 'Bridging academia and industry. Transforming students into job-ready professionals through <span class="text-highlight">personality enhancement</span> and <span class="text-highlight">soft skills</span> modules.',
     placementFooter: 'Incubating Next-Gen Entrepreneurs'
 };
-
 const pressData = [
     { headline: 'Bharat Media', publisher: 'Bharat Media', link: 'https://bharatmediatoday.com/beenu-kumar-taneja-corporate-trainer-india/', file: 'bharat media.png' },
     { headline: 'IMDB Profile', publisher: 'IMDB', link: 'https://m.imdb.com/name/nm16918036/bio/?ref_=nm_ov_ql_1', file: 'imdb.png' },
@@ -67,14 +63,11 @@ const pressData = [
     { headline: 'Beenu Kumar Taneja: A Visionary Leader in Corporate Training and Coaching', publisher: 'IANS Wire', link: 'https://www.ians.in/vmpl/beenu-kumar-taneja-a-visionary-leader-in-corporate-training-and-coaching', file: 'INAS WIRE .png' },
     { headline: 'A Dynamic and Shining Star in the Field of Corporate Training and Coaching', publisher: 'Dainik Bhaskar', link: 'https://dainikbhaskarup.com/beenu-kumar-taneja-a-dynamic-and-shining-star-in-the-field-of-corporate-training-and-coaching/', file: 'danik bhaskar.png' }
 ];
-
 async function runMigrate() {
     console.log("Creating Site Settings...");
     await client.createOrReplace(settingsData);
-    
     console.log("Creating Expertise Page...");
     await client.createOrReplace(expertiseData);
-
     console.log("Fetching existing initiatives to patch bullets...");
     const initiatives = await client.fetch('*[_type == "initiative"]');
     for (let init of initiatives) {
@@ -87,7 +80,6 @@ async function runMigrate() {
         }
         console.log("Patched bullets for: " + init.name);
     }
-
     console.log("Creating Press Releases / Featured Articles...");
     for (let p of pressData) {
         const filePath = join(process.cwd(), '../assets/featured in ', p.file);
@@ -108,8 +100,6 @@ async function runMigrate() {
             console.error(`Failed to process ${p.file}:`, e.message);
         }
     }
-    
     console.log("FINAL MIGRATION COMPLETE!");
 }
-
 runMigrate().catch(console.error);

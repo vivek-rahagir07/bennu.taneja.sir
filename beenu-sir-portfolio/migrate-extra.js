@@ -2,9 +2,7 @@ import { getCliClient } from 'sanity/cli'
 import { createReadStream } from 'fs'
 import { join } from 'path'
 import process from 'process'
-
 const client = getCliClient({apiVersion: '2024-01-01'})
-
 const aboutData = {
     _type: 'aboutPage',
     bioParagraph1: '<span class="drop-cap">B</span>eenu Kumar Taneja is a <span class="text-highlight">highly respected corporate trainer</span>, entrepreneur, and leadership development expert who has made a <span class="text-highlight">powerful impact</span> in the field of professional training and organisational transformation in India. With <span class="text-highlight font-medium">over 19 years of professional experience</span>, including 17 years dedicated to training and development, he has established himself as a <span class="text-highlight">thought leader</span> in leadership development, behavioural skills, and performance enhancement across diverse industries.',
@@ -26,7 +24,6 @@ const aboutData = {
         '<strong style="color: var(--text-light); font-weight: 700;">Getting Roots</strong> regularly reviews the feedback and is committed for delivering quality workshops across all levels.'
     ]
 };
-
 const experienceData = [
     { title: 'Director', company: 'Getting Roots Coaching & Training Pvt. Ltd.', date: '2012 - Present', icon: 'fas fa-star', gold: true, order: 1 },
     { title: 'Training Consultant', company: 'Independent Coach', date: '2010 - 2012', icon: 'fas fa-briefcase', gold: true, order: 2 },
@@ -41,17 +38,14 @@ const experienceData = [
     { title: 'School Training', company: '100+ Schools Worldwide', date: 'Schools', icon: 'fas fa-school', gold: false, order: 11 },
     { title: 'Global Reach', company: '100,000+ Lives Transformed', date: 'Impact', icon: 'fas fa-globe', gold: true, order: 12 }
 ];
-
 const initiativesData = [
     { name: 'Getting Roots Coaching & Training Pvt. Ltd.', role: 'Director', desc: 'Building strong futures from the ground up through mindset development and skill-building. We transform potential into impact by rooting individuals in excellence and ethical values.', link: 'https://www.gettingroots.com', imageFile: 'getting roots.jpg', order: 1 },
     { name: 'Greeting Lives Foundation', role: 'General Secretary', desc: 'A purpose-driven organization uplifting communities through grassroots education and leadership. We empower individuals to transform their futures and build lasting self-reliance.', link: 'https://www.greetinglivesfoundation.org', imageFile: 'greeting lives.jpg', order: 2 },
     { name: 'Project HELP Global', role: 'Co-Founder', desc: 'An international mentorship program guiding students and young professionals toward clarity and confidence. We focus on holistic leadership and career direction for global success.', link: 'https://www.projecthelpglobal.com', imageFile: 'project help.jpg', order: 3 }
 ];
-
 async function runMigrate() {
     console.log("Creating About Page...");
     await client.create(aboutData);
-    
     console.log("Creating Experience Milestones...");
     for (let e of experienceData) {
         await client.create({
@@ -65,7 +59,6 @@ async function runMigrate() {
         });
         console.log("Created: " + e.title);
     }
-
     console.log("Creating Initiatives...");
     for (let i of initiativesData) {
         const filePath = join(process.cwd(), '../assets/images', i.imageFile);
@@ -88,8 +81,6 @@ async function runMigrate() {
             console.error(`Failed: ${i.imageFile}`, e.message);
         }
     }
-    
     console.log("MIGRATION COMPLETE!");
 }
-
 runMigrate().catch(console.error);
