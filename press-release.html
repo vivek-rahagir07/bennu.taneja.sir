@@ -412,7 +412,34 @@
     
     <!-- Coverflow JavaScript -->
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("SanityLoaded", () => {
+            const navTagsContainer = document.querySelector('.carousel-nav-tags');
+            const carouselContainer = document.querySelector('.carousel-3d');
+            
+            // 1. Populate Dynamic Articles
+            if (window.sanityFeaturedArticles && window.sanityFeaturedArticles.length > 0 && navTagsContainer && carouselContainer) {
+                navTagsContainer.innerHTML = '';
+                carouselContainer.innerHTML = '';
+                
+                window.sanityFeaturedArticles.forEach((article, idx) => {
+                    // Tag
+                    const activeClass = idx === 0 ? ' active' : '';
+                    navTagsContainer.innerHTML += `<button class="carousel-tag${activeClass}" data-index="${idx}">${article.publisher}</button>`;
+                    
+                    // Carousel Item
+                    const imgUrl = window.getSanityImageUrl(article.image);
+                    carouselContainer.innerHTML += `
+                    <a href="${article.link || '#'}" target="_blank" class="carousel-item${activeClass}">
+                        <img src="${imgUrl}" alt="${article.publisher}" loading="lazy">
+                        <div class="gallery-overlay">
+                            <h3>${article.publisher}</h3>
+                            <p>Read full article</p>
+                        </div>
+                    </a>`;
+                });
+            }
+
+            // 2. Initialize Carousel Logic
             const items = document.querySelectorAll('.carousel-item');
             const tags = document.querySelectorAll('.carousel-tag');
             let currentIndex = 0;

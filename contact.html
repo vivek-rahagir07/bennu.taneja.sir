@@ -213,6 +213,20 @@
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        document.addEventListener('SanityLoaded', () => {
+            if (window.sanitySettings) {
+                const details = document.querySelector('.detail-list');
+                if (details) {
+                    const links = details.querySelectorAll('a');
+                    const span = details.querySelector('li span');
+                    if (links[0] && window.sanitySettings.phone) { links[0].href = `tel:${window.sanitySettings.phone}`; links[0].textContent = window.sanitySettings.phone; }
+                    if (links[1] && window.sanitySettings.email) { links[1].href = `mailto:${window.sanitySettings.email}`; links[1].textContent = window.sanitySettings.email; }
+                    if (span && window.sanitySettings.location) { span.textContent = window.sanitySettings.location; }
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>

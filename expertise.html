@@ -258,6 +258,61 @@
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        document.addEventListener('SanityLoaded', () => {
+            if (window.sanityExpertise) {
+                const exp = window.sanityExpertise;
+                
+                // Faculty Tiles
+                const facultyContainer = document.querySelector('.faculty-tiles');
+                if (facultyContainer && exp.facultyRoles) {
+                    facultyContainer.innerHTML = '';
+                    exp.facultyRoles.forEach(role => {
+                        facultyContainer.innerHTML += `<div class="faculty-tile"><i class="fas fa-university"></i><span>${role}</span></div>`;
+                    });
+                }
+
+                // Training Modules
+                const subjectsContainer = document.querySelector('.subject-categories');
+                if (subjectsContainer && exp.trainingCategories) {
+                    subjectsContainer.innerHTML = '';
+                    exp.trainingCategories.forEach(cat => {
+                        let badgesHtml = '';
+                        (cat.badges || []).forEach(b => badgesHtml += `<span class="subject-badge">${b}</span>`);
+                        subjectsContainer.innerHTML += `
+                            <div class="subject-category">
+                                <div class="category-header">
+                                    <i class="${cat.icon || 'fas fa-star'}"></i>
+                                    <strong>${cat.title}</strong>
+                                </div>
+                                <div class="subject-badges">${badgesHtml}</div>
+                            </div>`;
+                    });
+                }
+
+                // Certifications
+                const certsContainer = document.querySelector('.cert-badges');
+                if (certsContainer && exp.certifications) {
+                    certsContainer.innerHTML = '';
+                    exp.certifications.forEach(cert => {
+                        certsContainer.innerHTML += `
+                            <div class="cert-pill">
+                                <strong>${cert.title}</strong>
+                                <span>${cert.subtitle}</span>
+                            </div>`;
+                    });
+                }
+
+                // Placement Training Pillar
+                const impactCard = document.querySelector('.impact-pillar-card');
+                if (impactCard && exp.placementTitle) {
+                    impactCard.querySelector('h3').textContent = exp.placementTitle;
+                    impactCard.querySelector('p').innerHTML = exp.placementDesc;
+                    impactCard.querySelector('.pillar-footer span').textContent = exp.placementFooter;
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>

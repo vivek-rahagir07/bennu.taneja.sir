@@ -189,6 +189,42 @@
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        document.addEventListener('SanityLoaded', () => {
+            const grid = document.querySelector('.subsidiary-grid');
+            if (grid && window.sanityInitiatives && window.sanityInitiatives.length > 0) {
+                grid.innerHTML = '';
+                window.sanityInitiatives.forEach(init => {
+                    const imgUrl = window.getSanityImageUrl(init.image);
+                    let bulletsHtml = '';
+                    if (init.bulletPoints && init.bulletPoints.length > 0) {
+                        bulletsHtml = '<ul style="margin-top: 15px;">';
+                        init.bulletPoints.forEach(b => bulletsHtml += `<li><i class="fas fa-check"></i> ${b}</li>`);
+                        bulletsHtml += '</ul>';
+                    }
+                    
+                    grid.innerHTML += `
+            <div class="subsidiary-card reveal" data-brand="${init._id}">
+                <div class="subsidiary-visual">
+                    <img src="${imgUrl}" alt="${init.name}" class="subsidiary-logo" loading="lazy">
+                    <div class="brand-line"></div>
+                </div>
+                <div class="subsidiary-content">
+                    <h3>${init.name}</h3>
+                    <p class="brand-tagline">${init.role || ''}</p>
+                    <div class="subsidiary-description">
+                        <p>${init.description || ''}</p>
+                        ${bulletsHtml}
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; margin-top: 20px;">
+                        <a href="${init.linkUrl || '#'}" target="_blank" class="subsidiary-btn">Explore Website <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>`;
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

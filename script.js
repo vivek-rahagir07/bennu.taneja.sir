@@ -24,7 +24,9 @@ async function initSanity() {
             "articles": *[_type == "featuredArticle"] | order(_createdAt desc),
             "about": *[_type == "aboutPage"][0],
             "experience": *[_type == "experienceMilestone"] | order(order asc),
-            "initiatives": *[_type == "initiative"] | order(order asc)
+            "initiatives": *[_type == "initiative"] | order(order asc),
+            "settings": *[_type == "siteSettings"][0],
+            "expertise": *[_type == "expertisePage"][0]
         }`);
         const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
         const res = await fetch(url);
@@ -46,6 +48,8 @@ async function initSanity() {
             window.sanityAbout = data.about || null;
             window.sanityExperience = data.experience || [];
             window.sanityInitiatives = data.initiatives || [];
+            window.sanitySettings = data.settings || null;
+            window.sanityExpertise = data.expertise || null;
         }
     } catch (e) {
         console.error("Sanity fetch failed:", e);
@@ -62,6 +66,35 @@ async function initSanity() {
     document.dispatchEvent(new Event('SanityLoaded'));
 }
 initSanity();
+
+// --- Global CMS UI Binding ---
+document.addEventListener('SanityLoaded', () => {
+    if (window.sanitySettings) {
+        // Update CTA Texts
+        document.querySelectorAll('.footer-cta-text h3').forEach(e => e.textContent = window.sanitySettings.ctaHeading);
+        document.querySelectorAll('.footer-cta-text p').forEach(e => e.textContent = window.sanitySettings.ctaSubtext);
+        
+        // Update Footer Descriptions
+        document.querySelectorAll('.footer-brand p').forEach(e => e.textContent = window.sanitySettings.footerText);
+
+        // Update Contact Info in Footers
+        document.querySelectorAll('.footer-contact').forEach(fc => {
+            const ps = fc.querySelectorAll('p');
+            if (ps[0] && window.sanitySettings.email) ps[0].innerHTML = `<i class="fas fa-envelope"></i> ${window.sanitySettings.email}`;
+            if (ps[1] && window.sanitySettings.location) ps[1].innerHTML = `<i class="fas fa-location-dot"></i> ${window.sanitySettings.location}`;
+        });
+
+        // Update Social Links Universally across the site
+        const socials = window.sanitySettings.socialLinks;
+        if (socials) {
+            document.querySelectorAll('a[aria-label="Instagram"], .branch-item.instagram').forEach(a => a.href = socials.instagram || '#');
+            document.querySelectorAll('a[aria-label="Facebook"], .branch-item.facebook').forEach(a => a.href = socials.facebook || '#');
+            document.querySelectorAll('a[aria-label="Twitter"], a[aria-label="X"], .branch-item.x-social').forEach(a => a.href = socials.twitter || '#');
+            document.querySelectorAll('a[aria-label="LinkedIn"], .branch-item.linkedin').forEach(a => a.href = socials.linkedin || '#');
+            document.querySelectorAll('a[aria-label="IMDB"], a[aria-label="IMDb"], .branch-item.imdb').forEach(a => a.href = socials.imdb || '#');
+        }
+    }
+});
 
 /* Enhanced Global Interactions */
 document.addEventListener('DOMContentLoaded', () => {

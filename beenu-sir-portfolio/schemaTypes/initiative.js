@@ -7,6 +7,7 @@ export default {
     { name: 'role', title: 'Your Role (e.g. Director)', type: 'string' },
     { name: 'description', title: 'Description', type: 'text' },
     { name: 'linkUrl', title: 'Website Link', type: 'url' },
+    { name: 'bulletPoints', title: 'Bullet Points', type: 'array', of: [{ type: 'string' }] },
     { name: 'image', title: 'Project Image', type: 'image', options: { hotspot: true } },
     { name: 'order', title: 'Order', type: 'number' }
   ],
