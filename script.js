@@ -1,3 +1,68 @@
+/* --- SANITY CMS INTEGRATION --- */
+const SANITY_PROJECT_ID = 'xuas1g49';
+const SANITY_DATASET = 'production';
+
+window.getSanityImageUrl = function(source) {
+    if (!source || !source.asset || !source.asset._ref) return '';
+    const parts = source.asset._ref.split('-');
+    if (parts.length < 4) return '';
+    return `https://cdn.sanity.io/images/${SANITY_PROJECT_ID}/${SANITY_DATASET}/${parts[1]}-${parts[2]}.${parts[3]}`;
+};
+
+window.globalServices = [];
+window.sanityGalleryImages = [];
+window.sanityFeaturedArticles = [];
+window.sanityAbout = null;
+window.sanityExperience = [];
+window.sanityInitiatives = [];
+
+async function initSanity() {
+    try {
+        const query = encodeURIComponent(`{
+            "engagements": *[_type == "engagement"] | order(order asc),
+            "gallery": *[_type == "galleryImage"] | order(order asc),
+            "articles": *[_type == "featuredArticle"] | order(_createdAt desc),
+            "about": *[_type == "aboutPage"][0],
+            "experience": *[_type == "experienceMilestone"] | order(order asc),
+            "initiatives": *[_type == "initiative"] | order(order asc)
+        }`);
+        const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
+        const res = await fetch(url);
+        const json = await res.json();
+        
+        if (json && json.result) {
+            const data = json.result;
+            if (data.engagements && data.engagements.length > 0) {
+                window.globalServices = data.engagements.map((e, idx) => ({
+                    id: e._id || `eng-${idx}`,
+                    title: e.title || '',
+                    category: e.category || 'ENGAGEMENT',
+                    code: e.code || `BK-${idx}`,
+                    description: e.description || ''
+                }));
+            }
+            window.sanityGalleryImages = data.gallery || [];
+            window.sanityFeaturedArticles = data.articles || [];
+            window.sanityAbout = data.about || null;
+            window.sanityExperience = data.experience || [];
+            window.sanityInitiatives = data.initiatives || [];
+        }
+    } catch (e) {
+        console.error("Sanity fetch failed:", e);
+    }
+
+    // Fallbacks if fetched zero engagements
+    if (window.globalServices.length === 0) {
+        window.globalServices = [
+            { id: 'keynote', title: 'Keynote Speaking', category: 'SPEAKING', code: 'BK-SC-01', description: 'Setting the standard...' },
+            { id: 'leadership', title: 'Leadership Talks', category: 'EXECUTIVE', code: 'BK-LT-02', description: 'Curating elite leadership frameworks for global boardrooms.' }
+        ];
+    }
+
+    document.dispatchEvent(new Event('SanityLoaded'));
+}
+initSanity();
+
 /* Enhanced Global Interactions */
 document.addEventListener('DOMContentLoaded', () => {
     // Navigation Scroll Effect & Shimmer wrapper
@@ -151,87 +216,97 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Gallery Lightbox Logic ---
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = lightbox ? lightbox.querySelector('.lightbox-img') : null;
-    const lightboxTitle = document.getElementById('lightbox-title');
-    const lightboxDesc = document.getElementById('lightbox-desc');
-    const closeBtn = lightbox ? lightbox.querySelector('.lightbox-close') : null;
-    const prevBtnL = lightbox ? lightbox.querySelector('.lightbox-btn.prev') : null;
-    const nextBtnL = lightbox ? lightbox.querySelector('.lightbox-btn.next') : null;
-    const galleryItems = document.querySelectorAll('.gallery-item');
-    let currentIndex = 0;
+    window.initLightbox = function() {
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = lightbox ? lightbox.querySelector('.lightbox-img') : null;
+        const lightboxTitle = document.getElementById('lightbox-title');
+        const lightboxDesc = document.getElementById('lightbox-desc');
+        const closeBtn = lightbox ? lightbox.querySelector('.lightbox-close') : null;
+        const prevBtnL = lightbox ? lightbox.querySelector('.lightbox-btn.prev') : null;
+        const nextBtnL = lightbox ? lightbox.querySelector('.lightbox-btn.next') : null;
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        let currentIndex = 0;
 
-    if (lightbox && galleryItems.length > 0) {
-        const updateLightbox = (index) => {
-            const item = galleryItems[index];
-            const img = item.querySelector('img');
-            const h3 = item.querySelector('h3');
-            const p = item.querySelector('p');
+        if (lightbox && galleryItems.length > 0) {
+            const updateLightbox = (index) => {
+                const item = galleryItems[index];
+                const img = item.querySelector('img');
+                const h3 = item.querySelector('h3');
+                const p = item.querySelector('p');
 
-            if (lightboxImg && img) {
-                lightboxImg.src = img.src;
-                lightboxImg.alt = img.alt;
+                if (lightboxImg && img) {
+                    lightboxImg.src = img.src;
+                    lightboxImg.alt = img.alt;
+                }
+                if (lightboxTitle) lightboxTitle.textContent = h3 ? h3.textContent : "";
+                if (lightboxDesc) lightboxDesc.textContent = p ? p.textContent : "";
+                currentIndex = index;
+            };
+
+            galleryItems.forEach((item, index) => {
+                // Remove old listeners to prevent duplicates if called twice
+                const newItem = item.cloneNode(true);
+                item.parentNode.replaceChild(newItem, item);
+                
+                newItem.addEventListener('click', () => {
+                    updateLightbox(index);
+                    lightbox.classList.add('active');
+                    document.body.style.overflow = 'hidden'; 
+                });
+
+                newItem.addEventListener('mousemove', (e) => {
+                    const rect = newItem.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    const img = newItem.querySelector('img');
+                    if (img) img.style.transform = `scale(1.05) translate(${x * 0.02}px, ${y * 0.02}px)`;
+                });
+
+                newItem.addEventListener('mouseleave', () => {
+                    const img = newItem.querySelector('img');
+                    if (img) img.style.transform = `scale(1) translate(0, 0)`;
+                });
+            });
+
+            // Re-select items after clone replacing
+            const newGalleryItems = document.querySelectorAll('.gallery-item');
+
+            const closeLightbox = () => {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            };
+
+            // Remove old close bindings by cloning if necessary or just bind once
+            // Actually, we can just attach it safely. If initLightbox is called once per page load, it's fine.
+            if (closeBtn) closeBtn.onclick = closeLightbox;
+            if (lightbox) {
+                lightbox.onclick = (e) => {
+                    if (e.target === lightbox) closeLightbox();
+                };
             }
-            if (lightboxTitle) lightboxTitle.textContent = h3 ? h3.textContent : "";
-            if (lightboxDesc) lightboxDesc.textContent = p ? p.textContent : "";
-            currentIndex = index;
-        };
 
-        galleryItems.forEach((item, index) => {
-            item.addEventListener('click', () => {
-                updateLightbox(index);
-                lightbox.classList.add('active');
-                document.body.style.overflow = 'hidden'; // Prevent scroll
-            });
+            if (prevBtnL) prevBtnL.onclick = (e) => {
+                e.stopPropagation();
+                currentIndex = (currentIndex - 1 + newGalleryItems.length) % newGalleryItems.length;
+                updateLightbox(currentIndex);
+            };
 
-            // Magnetic effect for gallery items
-            item.addEventListener('mousemove', (e) => {
-                const rect = item.getBoundingClientRect();
-                const x = e.clientX - rect.left - rect.width / 2;
-                const y = e.clientY - rect.top - rect.height / 2;
+            if (nextBtnL) nextBtnL.onclick = (e) => {
+                e.stopPropagation();
+                currentIndex = (currentIndex + 1) % newGalleryItems.length;
+                updateLightbox(currentIndex);
+            };
 
-                const img = item.querySelector('img');
-                if (img) img.style.transform = `scale(1.05) translate(${x * 0.02}px, ${y * 0.02}px)`;
-            });
-
-            item.addEventListener('mouseleave', () => {
-                const img = item.querySelector('img');
-                if (img) img.style.transform = `scale(1) translate(0, 0)`;
-            });
-        });
-
-        const closeLightbox = () => {
-            lightbox.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        };
-
-        if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
-        if (lightbox) {
-            lightbox.addEventListener('click', (e) => {
-                if (e.target === lightbox) closeLightbox();
+            document.addEventListener('keydown', (e) => {
+                if (!lightbox.classList.contains('active')) return;
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowLeft' && prevBtnL) prevBtnL.click();
+                if (e.key === 'ArrowRight' && nextBtnL) nextBtnL.click();
             });
         }
-
-        if (prevBtnL) prevBtnL.addEventListener('click', (e) => {
-            e.stopPropagation();
-            currentIndex = (currentIndex - 1 + galleryItems.length) % galleryItems.length;
-            updateLightbox(currentIndex);
-        });
-
-        if (nextBtnL) nextBtnL.addEventListener('click', (e) => {
-            e.stopPropagation();
-            currentIndex = (currentIndex + 1) % galleryItems.length;
-            updateLightbox(currentIndex);
-        });
-
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            if (!lightbox.classList.contains('active')) return;
-            if (e.key === 'Escape') closeLightbox();
-            if (e.key === 'ArrowLeft' && prevBtnL) prevBtnL.click();
-            if (e.key === 'ArrowRight' && nextBtnL) nextBtnL.click();
-        });
-    }
+    };
+    // Call it immediately for pages with static content, dynamic pages will call it again
+    window.initLightbox();
 
     // --- Mobile Navigation ---
     const setupMobileNav = () => {
@@ -304,19 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // --- Global Engagements Sidebar ---
-const globalServices = [
-    { id: 'keynote', title: 'Keynote Speaking', category: 'SPEAKING', code: 'BK-SC-01', description: 'Setting the standard for global summits with thought-provoking addresses that blend cinematic storytelling with actionable strategic wisdom. These sessions are designed to challenge existing paradigms and inspire institutional transformation at the highest levels of leadership.' },
-    { id: 'leadership', title: 'Leadership Talks', category: 'EXECUTIVE', code: 'BK-LT-02', description: 'Curating elite leadership frameworks for global boardrooms. We dissect the nuances of power dynamics, resilient organizational culture, and the architectural principles of sustainable success in volatile markets.' },
-    { id: 'motivational', title: 'Motivational Talks', category: 'POTENTIAL', code: 'BK-MT-03', description: 'Igniting the untapped potential within your workforce. These sessions combine behavioral science with high-impact storytelling to catalyze a shift from passive participation to passionate, ownership-driven execution.' },
-    { id: 'tedx', title: 'TEDx Speaker', category: 'IMPACT', code: 'BK-TX-04', description: 'Distilling complex human insights into globally resonant narratives. As a TEDx veteran, I deliver high-signal ideas that challenge conventional wisdom and inspire collective action on the world stage.' },
-    { id: 'storytelling', title: 'Story Telling', category: 'NARRATIVE', code: 'BK-ST-05', description: 'Harnessing the power of narrative to build compelling brand identities and emotional connections. We teach leaders how to craft stories that not only resonate but drive decisive action from target audiences.' },
-    { id: 'consulting', title: 'Business Consulting', category: 'STRATEGY', code: 'BK-BC-06', description: 'Providing high-value bespoke advisory for C-suite leaders. We partner with you to solve systemic challenges, optimize decision-making workflows, and build a legacy of operational excellence.' },
-    { id: 'org', title: 'Org. Development', category: 'STRUCTURE', code: 'BK-OD-07', description: 'Strengthening the structural integrity of your organization through robust development models. We provide the scaffolding necessary for transparent, high-integrity corporate stewardship.' },
-    { id: 'process', title: 'Process & Streamlining', category: 'OPERATIONS', code: 'BK-PS-08', description: 'Navigating the intricate landscape of operational workflows. We specialize in reducing friction during transitions, ensuring that processes are maximized for competitive advantage.' },
-    { id: 'education', title: 'Educational Thinking', category: 'PEDAGOGY', code: 'BK-ET-09', description: 'Revolutionizing educational approaches with strategic thinking frameworks. We empower institutions to cultivate environments of relentless curiosity and profound intellectual growth.' }
-];
-
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('SanityLoaded', () => {
     // Generate Toggle Button
     const toggleBtn = document.createElement('button');
     toggleBtn.id = 'global-sidebar-toggle';
@@ -338,7 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const listUl = document.getElementById('global-right-navigator-list');
 
-    globalServices.forEach((s, i) => {
+    window.globalServices.forEach((s, i) => {
         const li = document.createElement('li');
         const num = (i + 1).toString().padStart(2, '0');
         li.classList.add(`engagement-item-${s.id}`);
@@ -383,11 +446,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // --- Featured Articles Rotator ---
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('SanityLoaded', () => {
     const featuredCards = document.querySelectorAll('.featured-card');
     if (featuredCards.length === 0) return;
 
-    const pressReleases = [
+    let pressReleases = [
         {
             title: "Beenu Kumar Taneja: A Visionary Leader in Corporate Training and Coaching",
             img: "assets/featured in /INAS WIRE .png",
@@ -405,32 +468,17 @@ document.addEventListener('DOMContentLoaded', () => {
             img: "assets/featured in /mid day.png",
             alt: "Mid Day",
             link: "https://www.mid-day.com/brand-stories/business-and-service/article/emerging-personalities-and-brands-to-watch-in-2026-8845"
-        },
-        {
-            title: "Reporter Live Featured Profile",
-            img: "assets/featured in /reporter live.png",
-            alt: "Reporter Live",
-            link: "https://areporterlive.com/beenu-kumar-taneja-corporate-trainer-india/"
-        },
-        {
-            title: "Bharat Media Featured Article",
-            img: "assets/featured in /bharat media.png",
-            alt: "Bharat Media",
-            link: "https://bharatmediatoday.com/beenu-kumar-taneja-corporate-trainer-india/"
-        },
-        {
-            title: "IMDB Profile & Biography",
-            img: "assets/featured in /imdb.png",
-            alt: "IMDB",
-            link: "https://m.imdb.com/name/nm16918036/bio/?ref_=nm_ov_ql_1"
-        },
-        {
-            title: "Knowledge Pedia Featured Interview",
-            img: "assets/featured in /knowledge .png",
-            alt: "Knowledge Pedia",
-            link: "#"
         }
     ];
+
+    if (window.sanityFeaturedArticles && window.sanityFeaturedArticles.length >= 3) {
+        pressReleases = window.sanityFeaturedArticles.map(a => ({
+            title: a.title,
+            img: window.getSanityImageUrl(a.image),
+            alt: a.alt,
+            link: a.link
+        }));
+    }
 
     let currentlyDisplayedIndexes = [0, 1, 2];
 

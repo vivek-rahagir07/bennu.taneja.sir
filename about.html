@@ -210,6 +210,63 @@
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        document.addEventListener('SanityLoaded', () => {
+            if (window.sanityAbout) {
+                // Bio Narrative
+                const bioContainer = document.querySelector('.bio-narrative');
+                if (bioContainer) {
+                    // Update text without destroying the signature image at the bottom
+                    const p1 = window.sanityAbout.bioParagraph1;
+                    const p2 = window.sanityAbout.bioParagraph2;
+                    const p3 = window.sanityAbout.bioParagraph3;
+                    const paragraphs = bioContainer.querySelectorAll('p');
+                    if(paragraphs[0] && p1) paragraphs[0].innerHTML = p1;
+                    if(paragraphs[1] && p2) paragraphs[1].innerHTML = p2;
+                    if(paragraphs[2] && p3) paragraphs[2].innerHTML = p3;
+                }
+
+                // Quotes
+                const quoteContainer = document.querySelector('.quote-content');
+                if (quoteContainer) {
+                    const spans = quoteContainer.querySelectorAll('.quote-line');
+                    if(spans[0] && window.sanityAbout.quoteLine1) spans[0].innerHTML = window.sanityAbout.quoteLine1;
+                    if(spans[1] && window.sanityAbout.quoteLine2) spans[1].innerHTML = window.sanityAbout.quoteLine2;
+                }
+
+                // Vision & Mission
+                const visionCard = document.querySelectorAll('.vision-pillar')[0];
+                const missionCard = document.querySelectorAll('.vision-pillar')[1];
+                
+                if (visionCard && window.sanityAbout.visionStatement) {
+                    const textP = visionCard.querySelector('.vision-card-text');
+                    if (textP) textP.innerHTML = window.sanityAbout.visionStatement;
+                }
+
+                if (missionCard && window.sanityAbout.missionPoints) {
+                    const ul = missionCard.querySelector('.detail-list');
+                    if (ul) {
+                        ul.innerHTML = '';
+                        window.sanityAbout.missionPoints.forEach(pt => {
+                            ul.innerHTML += `<li style="margin-bottom: 12px;"><i class="fas fa-arrow-right" style="color: var(--accent); margin-right: 10px;"></i> ${pt}</li>`;
+                        });
+                    }
+                }
+
+                // Policies
+                const policyCard = document.querySelector('.future-vision-panel');
+                if (policyCard && window.sanityAbout.policies) {
+                    const ul = policyCard.querySelector('.detail-list');
+                    if (ul) {
+                        ul.innerHTML = '';
+                        window.sanityAbout.policies.forEach(pt => {
+                            ul.innerHTML += `<li style="margin-bottom: 18px;"><i class="fas fa-check-circle" style="color: var(--accent); margin-right: 15px; font-size: 1.2rem;"></i> ${pt}</li>`;
+                        });
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>

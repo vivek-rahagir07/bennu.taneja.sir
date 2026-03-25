@@ -159,7 +159,7 @@
             modal.classList.remove('active');
         }
 
-        window.addEventListener('load', () => {
+        document.addEventListener('SanityLoaded', () => {
             initCleanEngagements();
             const closeBtn = document.getElementById('close-modal-btn');
             if (closeBtn) closeBtn.addEventListener('click', closeEngagementModal);
@@ -171,6 +171,11 @@
                 });
             }
         });
+
+        // Fallback for static cases or cached execution
+        if (window.globalServices && window.globalServices.length > 0) {
+            initCleanEngagements();
+        }
 
         // Expose activateEngagement to global scope for script.js to call
         window.activateEngagement = activateEngagement;

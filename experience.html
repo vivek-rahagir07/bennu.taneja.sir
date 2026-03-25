@@ -272,6 +272,32 @@
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        document.addEventListener('SanityLoaded', () => {
+            const container = document.querySelector('.timeline-branch-container');
+            if (window.sanityExperience && window.sanityExperience.length > 0 && container) {
+                container.innerHTML = ''; // clear static
+                window.sanityExperience.forEach((e, idx) => {
+                    const side = idx % 2 === 0 ? 'left' : 'right';
+                    const goldClass = e.isGold ? ' milestone-gold' : '';
+                    const labelClass = e.isGold ? 'branch-date' : 'branch-role';
+                    
+                    const el = document.createElement('div');
+                    el.className = `timeline-branch ${side}${goldClass}`;
+                    el.style.setProperty('--index', idx + 1);
+                    el.innerHTML = `
+                        <div class="branch-symbol"><i class="${e.icon || 'fas fa-star'}"></i></div>
+                        <div class="branch-content glass">
+                            <span class="${labelClass}">${e.dateRange || ''}</span>
+                            <h4>${e.title || ''}</h4>
+                            <p>${e.company || ''}</p>
+                        </div>
+                    `;
+                    container.appendChild(el);
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

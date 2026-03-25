@@ -291,6 +291,68 @@
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        document.addEventListener('SanityLoaded', () => {
+            // 1. Populate Initiatives
+            const initGrid = document.querySelector('#home + .light-section .grid');
+            if (window.sanityInitiatives && window.sanityInitiatives.length > 0 && initGrid) {
+                initGrid.innerHTML = '';
+                window.sanityInitiatives.forEach(i => {
+                    const imgUrl = window.getSanityImageUrl(i.image);
+                    const col = document.createElement('div');
+                    col.style.cssText = 'display: flex; flex-direction: column; align-items: center; width: 100%;';
+                    col.innerHTML = `
+                        <div class="flip-card" style="margin-bottom: 20px;">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front">
+                                    <img src="${imgUrl}" alt="${i.name || ''}" loading="lazy">
+                                </div>
+                                <div class="flip-card-back glass">
+                                    <h3 style="font-size: 1.2rem;">${i.name || ''} <span style="display: block; font-size: 0.9rem; color: var(--accent); margin-top: 5px;">${i.role || ''}</span></h3>
+                                    <p>${i.description || ''}</p>
+                                    <a href="${i.linkUrl || '#'}" target="_blank" class="btn" style="margin-top: 20px; padding: 10px 20px; font-size: 0.9rem;">Learn More</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="project-socials" style="margin-top: 0; display: flex; gap: 12px; margin-bottom: 30px;">
+                            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                            <a href="#" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
+                            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    `;
+                    initGrid.appendChild(col);
+                });
+            }
+
+            // 2. Populate Featured Articles
+            // The featured section is the second .grid inside a .light-section
+            const featuredGrid = document.querySelectorAll('.light-section .grid')[1];
+            if (window.sanityFeaturedArticles && window.sanityFeaturedArticles.length > 0 && featuredGrid) {
+                featuredGrid.innerHTML = '';
+                // Limit to 3 articles on homepage
+                window.sanityFeaturedArticles.slice(0, 3).forEach(article => {
+                    const imgUrl = window.getSanityImageUrl(article.image);
+                    const el = document.createElement('div');
+                    el.className = 'featured-card reveal';
+                    el.innerHTML = `
+                        <div class="featured-img-container">
+                            <img src="${imgUrl}" alt="${article.publisher || ''}" loading="lazy">
+                        </div>
+                        <div class="featured-content">
+                            <div class="featured-badge">Featured Article</div>
+                            <h3 class="text-md" style="font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; line-height: 1.4; margin-bottom: 20px; color: var(--text-light);">${article.headline || ''}</h3>
+                            <div style="margin-top: auto;">
+                                <a href="${article.link || '#'}" target="_blank" class="featured-link">Read Full Story <i class="fas fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    `;
+                    featuredGrid.appendChild(el);
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

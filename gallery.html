@@ -542,7 +542,37 @@
     <!-- Scripts -->
     <script src="script.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("SanityLoaded", () => {
+            const track = document.getElementById('carouselTrack');
+            
+            // Build gallery from Sanity
+            if (window.sanityGalleryImages && window.sanityGalleryImages.length > 0) {
+                track.innerHTML = ''; // clear static placeholders
+                window.sanityGalleryImages.forEach(imgData => {
+                    const card = document.createElement('div');
+                    card.className = 'premium-card gallery-item hidden';
+                    
+                    const imgUrl = window.getSanityImageUrl(imgData.image);
+                    const title = imgData.title || '';
+                    const desc = imgData.description || '';
+                    
+                    card.innerHTML = `
+                        <div class="gallery-view-icon"><i class="fas fa-expand"></i></div>
+                        <img src="${imgUrl}" alt="${title}">
+                        <div class="gallery-overlay">
+                            <h3>${title}</h3>
+                            <p>${desc}</p>
+                        </div>
+                    `;
+                    track.appendChild(card);
+                });
+            }
+
+            // Re-bind universal lightbox now that dynamic items exist
+            if (typeof window.initLightbox === 'function') {
+                window.initLightbox();
+            }
+
             const cards = document.querySelectorAll('.premium-card');
             const prevBtn = document.getElementById('carouselPrev');
             const nextBtn = document.getElementById('carouselNext');
@@ -550,14 +580,14 @@
             let currentIndex = 0;
             let isAutoSpinning = true;
 
+            if (totalCards === 0) return;
+
             function updateCarousel() {
                 cards.forEach((card, i) => {
-                    // Core Infinite Loop Math
                     let pos = i - currentIndex;
                     if (pos < -Math.floor(totalCards/2)) pos += totalCards;
                     if (pos > Math.floor(totalCards/2)) pos -= totalCards;
 
-                    // Reset classes cleanly
                     card.className = 'premium-card gallery-item';
 
                     if (pos === 0) card.classList.add('active');
@@ -586,11 +616,10 @@
                 });
             }
 
-            // Intuitive Side Card Mechanics
             cards.forEach((card, i) => {
                 card.addEventListener('click', (e) => {
                     if (!card.classList.contains('active')) {
-                        e.stopPropagation(); // Block lightbox click safely
+                        e.stopPropagation();
                         isAutoSpinning = false;
                         currentIndex = i;
                         updateCarousel();
@@ -598,7 +627,6 @@
                     }
                 });
 
-                // Hover halts automatic advance
                 card.addEventListener('mouseenter', () => isAutoSpinning = false);
                 card.addEventListener('mouseleave', () => isAutoSpinning = true);
             });
@@ -613,6 +641,7 @@
             // Initialize Layout
             updateCarousel();
         });
+
     </script>
 </body>
 </html>
