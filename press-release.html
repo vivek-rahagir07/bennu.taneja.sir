@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Press Release - Beenu Kumar Taneja">
+    <!-- SEO & Social Media Meta Tags -->
+    <meta property="og:title" content="Press Release | Beenu Kumar Taneja">
+    <meta property="og:description" content="Press Releases & Featured Articles">
+    <meta property="og:image" content="assets/images/about_portrait.png">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <title>Press Release | Beenu Kumar Taneja</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Outfit:wght@100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="animations.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* 3D Coverflow Carousel Specific Styles */
+        .carousel-container {
+            perspective: 1500px;
+            width: 100%;
+            height: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            margin: 60px 0;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        .carousel-3d {
+            position: relative;
+            width: 320px;
+            height: 400px;
+            transform-style: preserve-3d;
+        }
+
+        .carousel-item {
+            position: absolute;
+            inset: 0;
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease, z-index 0.8s;
+            border-radius: 20px;
+            overflow: hidden;
+            background: #fff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .carousel-item img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.4s ease;
+        }
+
+        .carousel-item:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Coverflow States */
+        .carousel-item.active {
+            transform: translateX(0) translateZ(0px) rotateY(0deg);
+            z-index: 10;
+            opacity: 1;
+            box-shadow: 0 20px 50px rgba(176, 141, 26, 0.25);
+        }
+
+        .carousel-item.prev-1 {
+            transform: translateX(-55%) translateZ(-150px) rotateY(45deg);
+            z-index: 9;
+            opacity: 0.85;
+        }
+
+        .carousel-item.next-1 {
+            transform: translateX(55%) translateZ(-150px) rotateY(-45deg);
+            z-index: 9;
+            opacity: 0.85;
+        }
+
+        .carousel-item.prev-2 {
+            transform: translateX(-90%) translateZ(-350px) rotateY(65deg);
+            z-index: 8;
+            opacity: 0.5;
+        }
+
+        .carousel-item.next-2 {
+            transform: translateX(90%) translateZ(-350px) rotateY(-65deg);
+            z-index: 8;
+            opacity: 0.5;
+        }
+
+        .carousel-item.hidden-left {
+            transform: translateX(-120%) translateZ(-500px) rotateY(70deg);
+            z-index: 7;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .carousel-item.hidden-right {
+            transform: translateX(120%) translateZ(-500px) rotateY(-70deg);
+            z-index: 7;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Overlay for active item hover */
+        .gallery-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(var(--accent-rgb), 0.9) 0%, transparent 70%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 30px 20px;
+            opacity: 0;
+            transition: all 0.5s ease;
+            transform: translateY(20px);
+            z-index: 2;
+        }
+
+        .carousel-item.active:hover .gallery-overlay {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .gallery-overlay h3 {
+            color: #fff;
+            font-size: 1.4rem;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            margin-bottom: 5px;
+        }
+
+        .gallery-overlay p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+        }
+
+        /* Carousel Navigation Tags */
+        .carousel-nav-tags {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: -100px; /* Reduced vertical space to counter divider gap */
+            margin-bottom: -10px;
+            z-index: 20;
+            position: relative;
+        }
+
+        .carousel-tag {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(176, 141, 26, 0.3);
+            color: var(--text-light);
+            padding: 10px 22px;
+            border-radius: 50px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .carousel-tag:hover {
+            border-color: var(--accent);
+            background: rgba(176, 141, 26, 0.1);
+            color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(176, 141, 26, 0.15);
+        }
+
+        .carousel-tag.active {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(176, 141, 26, 0.4);
+            border-color: var(--accent);
+            transform: scale(1.05);
+        }
+        
+        /* Mobile fixes for carousel */
+        @media (max-width: 768px) {
+            .carousel-3d {
+                width: 240px;
+                height: 300px;
+            }
+            .carousel-container {
+                height: 400px;
+                perspective: 1000px;
+            }
+            .carousel-item.prev-1 {
+                transform: translateX(-40%) translateZ(-100px) rotateY(40deg);
+            }
+            .carousel-item.next-1 {
+                transform: translateX(40%) translateZ(-100px) rotateY(-40deg);
+            }
+            .carousel-item.prev-2 {
+                transform: translateX(-70%) translateZ(-250px) rotateY(60deg);
+            }
+            .carousel-item.next-2 {
+                transform: translateX(70%) translateZ(-250px) rotateY(-60deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+</div>
+
+    <div class="bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar" aria-label="Main Navigation">
+        <a href="index.html" class="logo" aria-label="Beenu Kumar Taneja Home">
+            <img src="assets/images/signature.png" alt="Beenu Kumar Taneja Signature" class="signature-logo">
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="experience.html">Experience</a></li>
+            <li><a href="expertise.html">Expertise</a></li>
+            <li><a href="engagements.html">Engagements</a></li>
+            <li><a href="subsidiaries.html">Subsidiaries</a></li>
+            <li class="dropdown">
+                <a href="javascript:void(0)" class="dropbtn active">Media Room <i class="fas fa-chevron-down" style="font-size: 0.7rem; margin-top:2px;"></i></a>
+                <div class="dropdown-content">
+                    <a href="gallery.html">Photo Gallery</a>
+                    <a href="press-release.html">Press Release</a>
+                </div>
+            </li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </nav>
+
+    <section class="page-header container" style="text-align: center;">
+        <h2 class="section-title reveal" style="justify-content: center;">Press Release</h2>
+        <p class="vision-subtitle">Featured Articles & Mentions</p>
+        <img src="assets/gallery/boarder.png" alt="Decorative Divider" class="gallery-divider-img">
+
+        <!-- Carousel Nav Tags -->
+        <div class="carousel-nav-tags reveal">
+            <button class="carousel-tag active" data-index="0">Bharat Media</button>
+            <button class="carousel-tag" data-index="1">IMDB Profile</button>
+            <button class="carousel-tag" data-index="2">Knowledge Pedia</button>
+            <button class="carousel-tag" data-index="3">Mid Day</button>
+            <button class="carousel-tag" data-index="4">Reporter Live</button>
+            <button class="carousel-tag" data-index="5">IANS Wire</button>
+            <button class="carousel-tag" data-index="6">Dainik Bhaskar</button>
+        </div>
+
+        <!-- 3D Coverflow Carousel -->
+        <div class="carousel-container reveal">
+            <div class="carousel-3d">
+                
+                <!-- Bharat Media -->
+                <a href="https://bharatmediatoday.com/beenu-kumar-taneja-corporate-trainer-india/" target="_blank" class="carousel-item">
+                    <img src="assets/featured in /bharat media.png" alt="Bharat Media Featured" loading="lazy">
+                    <div class="gallery-overlay">
+                        <h3>Bharat Media</h3>
+                        <p>Read full article</p>
+                    </div>
+                </a>
+
+                <!-- IMDB -->
+                <a href="https://m.imdb.com/name/nm16918036/bio/?ref_=nm_ov_ql_1" target="_blank" class="carousel-item">
+                    <img src="assets/featured in /imdb.png" alt="IMDB Profile" loading="lazy">
+                    <div class="gallery-overlay">
+                        <h3>IMDB Profile</h3>
+                        <p>View biography</p>
+                    </div>
+                </a>
+
+                <!-- Knowledge Pedia -->
+                <a href="#" class="carousel-item">
+                    <img src="assets/featured in /knowledge .png" alt="Knowledge Pedia Featured" loading="lazy">
+                    <div class="gallery-overlay">
+                        <h3>Knowledge Pedia</h3>
+                        <p>Featured Interview</p>
+                    </div>
+                </a>
+
+                <!-- Mid Day -->
+                <a href="https://www.mid-day.com/brand-stories/business-and-service/article/emerging-personalities-and-brands-to-watch-in-2026-8845" target="_blank" class="carousel-item">
+                    <img src="assets/featured in /mid day.png" alt="Mid Day Featured" loading="lazy">
+                    <div class="gallery-overlay">
+                        <h3>Mid Day</h3>
+                        <p>Read full article</p>
+                    </div>
+                </a>
+
+                <!-- Reporter Live -->
+                <a href="https://areporterlive.com/beenu-kumar-taneja-corporate-trainer-india/" target="_blank" class="carousel-item">
+                    <img src="assets/featured in /reporter live.png" alt="Reporter Live Featured" loading="lazy">
+                    <div class="gallery-overlay">
+                        <h3>Reporter Live</h3>
+                        <p>Read full article</p>
+                    </div>
+                </a>
+
+                <!-- IANS Wire -->
+                <a href="https://www.ians.in/vmpl/beenu-kumar-taneja-a-visionary-leader-in-corporate-training-and-coaching" target="_blank" class="carousel-item">
+                    <img src="assets/featured in /INAS WIRE .png" alt="IANS Wire Featured" loading="lazy">
+                    <div class="gallery-overlay">
+                        <h3>IANS Wire</h3>
+                        <p>Read full article</p>
+                    </div>
+                </a>
+
+                <!-- Dainik Bhaskar -->
+                <a href="https://dainikbhaskarup.com/beenu-kumar-taneja-a-dynamic-and-shining-star-in-the-field-of-corporate-training-and-coaching/" target="_blank" class="carousel-item">
+                    <img src="assets/featured in /danik bhaskar.png" alt="Dainik Bhaskar Featured" loading="lazy">
+                    <div class="gallery-overlay">
+                        <h3>Dainik Bhaskar</h3>
+                        <p>Read full article</p>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-cta-container">
+            <div class="footer-cta-text">
+                <h3>Ready to elevate your journey?</h3>
+                <p>Let's collaborate to create lasting impact through leadership and excellence.</p>
+            </div>
+            <a href="contact.html" class="btn">Get In Touch</a>
+        </div>
+
+        <div class="footer-content">
+            <div class="footer-brand">
+                <img src="assets/images/signature.png" alt="Beenu Kumar Taneja" class="footer-signature">
+                <p>Empowering individuals and organizations for over 19 years through transformative coaching,
+                    motivational speaking, and corporate leadership development.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="experience.html">Experience</a></li>
+                    <li><a href="expertise.html">Expertise</a></li>
+                    <li><a href="engagements.html">Engagements</a></li>
+                    <!-- We leave generic links to Media Room -> Photo Gallery by default in quick links -->
+
+                </ul>
+            </div>
+            <div class="footer-leadership">
+                <h4>Initiatives</h4>
+                <div class="initiative-logos">
+                    <a href="https://www.gettingroots.com" target="_blank" class="initiative-item">
+                        <div class="initiative-logo-circular">
+                            <img src="assets/images/getting roots.jpg" alt="Getting Roots">
+                        </div>
+                        <span>Getting Roots</span>
+                    </a>
+                    <a href="https://www.greetinglivesfoundation.org" target="_blank" class="initiative-item">
+                        <div class="initiative-logo-circular">
+                            <img src="assets/images/greeting lives.jpg" alt="Greeting Lives">
+                        </div>
+                        <span>Greeting Lives</span>
+                    </a>
+                    <a href="https://www.projecthelpglobal.com" target="_blank" class="initiative-item">
+                        <div class="initiative-logo-circular">
+                            <img src="assets/images/project help.jpg" alt="Project HELP">
+                        </div>
+                        <span>Project HELP Global</span>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-contact">
+                <h4>Connect</h4>
+                <p><i class="fas fa-envelope"></i> contact@beenukumartaneja.com</p>
+                <p><i class="fas fa-location-dot"></i> New Delhi, India</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2024 Beenu Kumar Taneja. All Rights Reserved.</p>
+            <div class="footer-socials">
+                <a href="https://www.linkedin.com/in/beenutaneja/" target="_blank" aria-label="LinkedIn"><i
+                        class="fab fa-linkedin-in"></i></a>
+                <a href="https://www.instagram.com/beenu.taneja/?hl=en" target="_blank" aria-label="Instagram"><i
+                        class="fab fa-instagram"></i></a>
+                <a href="https://x.com/TanejaBeenu" target="_blank" aria-label="X"><i class="fab fa-x-twitter"></i></a>
+                <a href="https://m.imdb.com/name/nm16918036/bio/" target="_blank" aria-label="IMDB"><i
+                        class="fab fa-imdb"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+    
+    <!-- Coverflow JavaScript -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const items = document.querySelectorAll('.carousel-item');
+            const tags = document.querySelectorAll('.carousel-tag');
+            let currentIndex = 0;
+            let autoPlayInterval;
+
+            function updateCarousel() {
+                items.forEach((item, index) => {
+                    // Clear all state classes
+                    item.classList.remove('active', 'prev-1', 'next-1', 'prev-2', 'next-2', 'hidden-left', 'hidden-right');
+
+                    // Calculate circular offset
+                    let offset = index - currentIndex;
+                    const total = items.length;
+                    
+                    if (offset < -Math.floor(total / 2)) offset += total;
+                    if (offset > Math.floor(total / 2)) offset -= total;
+
+                    // Re-apply states
+                    if (offset === 0) {
+                        item.classList.add('active');
+                    } else if (offset === -1) {
+                        item.classList.add('prev-1');
+                    } else if (offset === 1) {
+                        item.classList.add('next-1');
+                    } else if (offset === -2) {
+                        item.classList.add('prev-2');
+                    } else if (offset === 2) {
+                        item.classList.add('next-2');
+                    } else if (offset < 0) {
+                        item.classList.add('hidden-left');
+                    } else {
+                        item.classList.add('hidden-right');
+                    }
+                });
+
+                // Sync tags with carousel
+                tags.forEach((tag, index) => {
+                    if (index === currentIndex) {
+                        tag.classList.add('active');
+                    } else {
+                        tag.classList.remove('active');
+                    }
+                });
+            }
+
+            function nextSlide() {
+                currentIndex = (currentIndex + 1) % items.length;
+                updateCarousel();
+            }
+
+            // Init state
+            updateCarousel();
+
+            // Set infinite loop with 3 seconds delay
+            autoPlayInterval = setInterval(nextSlide, 3000);
+
+            // Pause rotation on hover
+            const container = document.querySelector('.carousel-container');
+            container.addEventListener('mouseenter', () => clearInterval(autoPlayInterval));
+            container.addEventListener('mouseleave', () => {
+                autoPlayInterval = setInterval(nextSlide, 3000);
+            });
+
+            // Manual Navigation via Tags
+            tags.forEach((tag) => {
+                tag.addEventListener('click', () => {
+                    currentIndex = parseInt(tag.getAttribute('data-index'));
+                    updateCarousel();
+                    clearInterval(autoPlayInterval);
+                    autoPlayInterval = setInterval(nextSlide, 3000);
+                });
+            });
+
+            // Prevent link clicks if card is not at the front
+            // And allow clicking side cards to navigate to them
+            items.forEach((item, index) => {
+                item.addEventListener('click', (e) => {
+                    let offset = index - currentIndex;
+                    const total = items.length;
+                    if (offset < -Math.floor(total / 2)) offset += total;
+                    if (offset > Math.floor(total / 2)) offset -= total;
+                    
+                    if (offset !== 0) {
+                        // Prevent the browser navigating to the article link
+                        e.preventDefault(); 
+                        
+                        // Navigate the carousel to the clicked card
+                        currentIndex = index;
+                        updateCarousel();
+                        
+                        // Reset the timer when manually navigating
+                        clearInterval(autoPlayInterval);
+                        autoPlayInterval = setInterval(nextSlide, 3000);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

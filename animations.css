@@ -1,0 +1,142 @@
+.client-names {
+    gap: 80px;
+    align-items: center;
+}
+
+.client-name {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-family: 'Playfair Display', serif;
+    white-space: nowrap;
+    opacity: 0.4;
+    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    position: relative;
+    cursor: default;
+}
+
+.client-name::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--accent);
+    transition: width 0.5s ease;
+}
+
+.client-name:hover {
+    color: var(--accent);
+    opacity: 1;
+    transform: scale(1.1) translateY(-2px);
+    filter: drop-shadow(0 0 10px rgba(176, 141, 26, 0.3));
+}
+
+.client-name:hover::after {
+    width: 100%;
+}
+
+/* Floating Particles (Global Integration) */
+.floating-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.floating-particles span {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--accent);
+    opacity: 0.1;
+    animation: particle-float 15s infinite linear;
+}
+
+@keyframes particle-float {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 0.2;
+    }
+
+    80% {
+        opacity: 0.2;
+    }
+
+    100% {
+        transform: translateY(-100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Particle Positions */
+.floating-particles span:nth-child(1) {
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.floating-particles span:nth-child(2) {
+    left: 30%;
+    animation-delay: 2s;
+}
+
+.floating-particles span:nth-child(3) {
+    left: 70%;
+    animation-delay: 4s;
+}
+
+.floating-particles span:nth-child(4) {
+    left: 90%;
+    animation-delay: 6s;
+}
+
+/* Interactive Card Polish */
+.interactive-card {
+    transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1), box-shadow 0.6s ease !important;
+}
+
+.interactive-card:hover {
+    transform: translateY(-8px) scale(1.02) !important;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Golden Flow Path (For dividers or borders) */
+.golden-glow-path {
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    height: 1px;
+    width: 100%;
+    opacity: 0.3;
+    animation: flow 3s infinite linear;
+}
+
+@keyframes flow {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+@keyframes gold-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 20px rgba(212, 175, 55, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(212, 175, 55, 0);
+    }
+}
