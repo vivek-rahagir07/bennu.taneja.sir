@@ -326,8 +326,7 @@
                 });
             }
 
-            // 2. Populate Featured Articles
-            // The featured section is the second .grid inside a .light-section
+            
             const featuredGrid = document.querySelectorAll('.light-section .grid')[1];
             if (window.sanityFeaturedArticles && window.sanityFeaturedArticles.length > 0 && featuredGrid) {
                 featuredGrid.innerHTML = '';

@@ -513,8 +513,7 @@
                 });
             });
 
-            // Prevent link clicks if card is not at the front
-            // And allow clicking side cards to navigate to them
+            
             items.forEach((item, index) => {
                 item.addEventListener('click', (e) => {
                     let offset = index - currentIndex;
@@ -523,14 +522,14 @@
                     if (offset > Math.floor(total / 2)) offset -= total;
                     
                     if (offset !== 0) {
-                        // Prevent the browser navigating to the article link
+                       
                         e.preventDefault(); 
                         
-                        // Navigate the carousel to the clicked card
+           
                         currentIndex = index;
                         updateCarousel();
                         
-                        // Reset the timer when manually navigating
+                       
                         clearInterval(autoPlayInterval);
                         autoPlayInterval = setInterval(nextSlide, 3000);
                     }
